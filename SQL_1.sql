@@ -103,14 +103,15 @@ FROM names;
 --ANSWER: 11%
 
 --15. How many names have made an appearance in every single year since 1880?
-SELECT COUNT
-	(SELECT COUNT(DISTINCT name)
-	FROM names
-	GROUP BY name
-	HAVING COUNT(DISTINCT year) = 139)
+SELECT
+	(SELECT COUNT(*)
+	 FROM (SELECT COUNT(DISTINCT name)
+		   FROM names
+		   GROUP BY name
+		   HAVING COUNT(DISTINCT year) = 139) AS names_sum)
 FROM names;
 
---ANSWER: ???
+--ANSWER: 921(?)
 
 --16. How many names have only appeared in one year?
 SELECT COUNT(DISTINCT name)
