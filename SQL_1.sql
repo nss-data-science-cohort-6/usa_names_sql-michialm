@@ -79,13 +79,41 @@ LIMIT 1;
 SELECT COUNT(DISTINCT name) as name_count
 FROM names
 WHERE name LIKE 'Q%' AND
-	name NOT LIKE '_u';
---ANSWER: 537
+	name NOT LIKE '_u%';
+--ANSWER: 46
 
 --13. Which is the more popular spelling between "Stephen" and "Steven"? Use a single query to answer this question.
-SELECT name, COUNT(DISTINCT name) AS name_count
+SELECT name, COUNT(name) AS name_count
 FROM names
 WHERE name = 'Steven' OR
 	name = 'Stephen'
-ORDER BY name_count DESC
-GROUP BY name;
+GROUP BY name
+ORDER BY name_count DESC;
+--ANSWER: "Stephen" (230)
+
+--14. What percentage of names are "unisex" - that is what percentage of names have been used both for boys and for girls?
+SELECT
+ (SELECT COUNT(*)
+   FROM (SELECT name
+   FROM names
+   GROUP BY name
+   HAVING COUNT(DISTINCT gender ) = 2) AS sub) /
+   CAST( COUNT(DISTINCT name) AS DOUBLE PRECISION)AS perc_unisex
+FROM names;
+--ANSWER: 11%
+
+--15. How many names have made an appearance in every single year since 1880?
+SELECT COUNT
+	(SELECT COUNT(DISTINCT name)
+	FROM names
+	GROUP BY name
+	HAVING COUNT(DISTINCT year) = 139)
+FROM names;
+
+--ANSWER: ???
+
+--16. How many names have only appeared in one year?
+SELECT COUNT(DISTINCT name)
+FROM names
+GROUP BY name
+HAVING COUNT(DISTINCT year) = 1;
